@@ -86,9 +86,9 @@
         <div class="form-group">
             <label for="frequency">Frequency</label>
             <select id="frequency">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="biweekly">Every Other Week</option>
+                <option value="D">Daily</option>
+                <option value="W" selected>Weekly</option>
+                <option value="OW">Every Other Week</option>
             </select>
         </div>
 
@@ -105,7 +105,7 @@
                 <option value="2">Tuesday</option>
                 <option value="3">Wednesday</option>
                 <option value="4">Thursday</option>
-                <option value="5">Friday</option>
+                <option value="5" selected>Friday</option>
                 <option value="6">Saturday</option>
             </select>
         </div>
@@ -120,10 +120,12 @@
 
             const noParameters = async () => {
                 const currentDate = new Date();
-                const balance = 1353.52;
-                const deadline = new Date(currentDate.setDate(currentDate.getDate() + 20)).toISOString().slice(0, 10);
-                const frequency = 'W';
-                const day = 5;
+                const balance = document.getElementById('balance-due').value;
+                const deadline = document.getElementById('due-date').value;
+                const frequency = document.getElementById('frequency').value;
+                const day = document.getElementById('payments-on').value;
+
+                console.log(`http://localhost:7071/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`)
                 try {
                     const response = await fetch(`http://localhost:7071/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`);
                     
