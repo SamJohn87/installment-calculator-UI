@@ -120,7 +120,7 @@
     <script>
 
         const paymentsOnStatus = () => {
-            if(document.getElementById('frequency').value === 'D') {
+            if (document.getElementById('frequency').value === 'D') {
                 document.getElementById('payments_on').setAttribute('disabled', 'disabled');
             } else {
                 document.getElementById('payments_on').removeAttribute('disabled', 'disabled');
@@ -137,6 +137,7 @@
             document.getElementById('results').style.display = 'none';
 
             if (isNaN(balance) || balance <= 0) {
+                document.getElementById('due_date').classList.remove('border', 'border-danger');
                 document.getElementById('balance_due').classList.add('border', 'border-danger');
                 document.getElementById('alert_data').innerHTML = '<span class="fw-medium">Please enter a balance greater than zero.</span>';
                 document.getElementById('alert_data').style.display = 'block';
@@ -146,27 +147,37 @@
                 document.getElementById('alert_data').innerHTML = '<span class="fw-medium">Please select your due date.</span>';
                 document.getElementById('alert_data').style.display = 'block';
             } else {
-                document.getElementById('balance_due').classList.remove('border', 'border-danger');
-                document.getElementById('due_date').classList.remove('border', 'border-danger');
-                document.getElementById('alert_data').style.display = 'none';
 
-                const noParameters = async () => {
+                const today = new Date();
+                const todayTime = today.toString().split(' ')[4];
+                const due_date = new Date(`${deadline}T${todayTime}`);
+               
+                if (due_date < today) {
+                    document.getElementById('due_date').classList.add('border', 'border-danger');
+                    document.getElementById('alert_data').innerHTML = '<span class="fw-medium">Your due date must be in the future.</span>';
+                    document.getElementById('alert_data').style.display = 'block';
+                } else {
+                    document.getElementById('balance_due').classList.remove('border', 'border-danger');
+                    document.getElementById('due_date').classList.remove('border', 'border-danger');
+                    document.getElementById('alert_data').style.display = 'none';
 
+                    const noParameters = async () => {
+                        console.log(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`)
+                        try {
+                            const response = await fetch(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`);
 
-                    console.log(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`)
-                    try {
-                        const response = await fetch(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`);
-
-                        const data = await response.text();
-                        console.log(data);
-                        document.getElementById('results').innerHTML = data;
-                        document.getElementById('results').style.display = "block";
-                    } catch (err) {
-                        console.log(err.message);
+                            const data = await response.text();
+                            console.log(data);
+                            document.getElementById('results').innerHTML = data;
+                            document.getElementById('results').style.display = "block";
+                        } catch (err) {
+                            console.log(err.message);
+                        }
                     }
-                }
 
-                noParameters();
+                    noParameters();
+
+                }
             };
         }
     </script>
