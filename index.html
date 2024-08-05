@@ -87,7 +87,7 @@
 
         <div class="form-group">
             <label for="frequency">Frequency</label>
-            <select id="frequency" class="form-select" aria-label="Default select example">
+            <select id="frequency" class="form-select" onchange="paymentsOnStatus()">
                 <option value="D">Daily</option>
                 <option value="W" selected>Weekly</option>
                 <option value="OW">Every Other Week</option>
@@ -100,8 +100,8 @@
         </div>
 
         <div class="form-group">
-            <label for="payments-on">Payments On</label>
-            <select id="payments-on" class="form-select" aria-label="Default select example">
+            <label for="payments_on">Payments On</label>
+            <select id="payments_on" class="form-select" aria-label="Default select example">
                 <option value="0">Sunday</option>
                 <option value="1">Monday</option>
                 <option value="2">Tuesday</option>
@@ -118,20 +118,29 @@
     </div>
 
     <script>
-        function calculateInstallments() {
+
+        const paymentsOnStatus = () => {
+            if(document.getElementById('frequency').value === 'D') {
+                document.getElementById('payments_on').setAttribute('disabled', 'disabled');
+            } else {
+                document.getElementById('payments_on').removeAttribute('disabled', 'disabled');
+            }
+        };
+
+        const calculateInstallments = () => {
 
             const balance = parseFloat(document.getElementById('balance_due').value);
             const deadline = document.getElementById('due_date').value;
             const frequency = document.getElementById('frequency').value;
-            const day = document.getElementById('payments-on').value;
+            const day = document.getElementById('payments_on').value;
 
             document.getElementById('results').style.display = 'none';
 
-            if(isNaN(balance) || balance <= 0){
+            if (isNaN(balance) || balance <= 0) {
                 document.getElementById('balance_due').classList.add('border', 'border-danger');
                 document.getElementById('alert_data').innerHTML = '<span class="fw-medium">Please enter a balance greater than zero.</span>';
                 document.getElementById('alert_data').style.display = 'block';
-            } else if(deadline === '') {
+            } else if (deadline === '') {
                 document.getElementById('balance_due').classList.remove('border', 'border-danger');
                 document.getElementById('due_date').classList.add('border', 'border-danger');
                 document.getElementById('alert_data').innerHTML = '<span class="fw-medium">Please select your due date.</span>';
@@ -141,26 +150,29 @@
                 document.getElementById('due_date').classList.remove('border', 'border-danger');
                 document.getElementById('alert_data').style.display = 'none';
 
-                const noParameters = async () => {               
-                
+                const noParameters = async () => {
 
-                    console.log(`http://localhost:7071/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`)
-                    /*try {
-                        const response = await fetch(`http://localhost:7071/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`);
+
+                    console.log(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`)
+                    try {
+                        const response = await fetch(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'text/plain'
+                            }
+                        });
 
                         const data = await response.text();
-                        console.log(data);*/
-                        document.getElementById('results').innerHTML = 'The results will appear here.';
+                        console.log(data);
+                        document.getElementById('results').innerHTML = data;
                         document.getElementById('results').style.display = "block";
-                    /*} catch (err) {
+                    } catch (err) {
                         console.log(err.message);
-                    }*/
+                    }
                 }
 
                 noParameters();
             };
-
-           
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
