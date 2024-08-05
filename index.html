@@ -155,12 +155,7 @@
 
                     console.log(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`)
                     try {
-                        const response = await fetch(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'text/plain'
-                            }
-                        });
+                        const response = await fetch(`http://localhost:7071/api/simple-interest?balance=${balance}&deadline=${deadline}&frequency=${frequency}&day=${day}`);
 
                         const data = await response.text();
                         console.log(data);
